@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="style.css" rel="stylesheet">
   <title>PWA</title>
@@ -15,18 +16,20 @@
   <div class="output">
   <img id="photo" alt="The screen capture will appear in this box." />
   </div>
+  <div>
+    <input type="file" accept="image/*" name="image" id="file" onchange="loadFile(event)" style="display: none;">
+    <label for="file" style="cursor: pointer;">Upload Image</label>
+    <img id="output" width="100" />
+  </div>
   <script>
-     const width = 320; // We will scale the photo width to this
+  const width = 320; // We will scale the photo width to this
   let height = 0; // This will be computed based on the input stream
-
   // |streaming| indicates whether or not we're currently streaming
   // video from the camera. Obviously, we start at false.
-
+  let list_images = []
   let streaming = false;
-
   // The various HTML elements we need to configure or control. These
   // will be set by the startup() function.
-
   let video = null;
   let canvas = null;
   let photo = null;
@@ -78,7 +81,6 @@
           if (isNaN(height)) {
             height = width / (4 / 3);
           }
-
           video.setAttribute("width", width);
           video.setAttribute("height", height);
           canvas.setAttribute("width", width);
@@ -127,12 +129,18 @@
       context.drawImage(video, 0, 0, width, height);
 
       const data = canvas.toDataURL("image/png");
+      list_images.push(data)
+      console.log(list_images)
       photo.setAttribute("src", data);
     } else {
       clearphoto();
     }
   }
 
+  var loadFile = function(event) {
+        var image = document.getElementById('output');
+        image.src = URL.createObjectURL(event.target.files[0]);
+  };
   // Set up our event listener to run the startup process
   // once loading is complete.
   window.addEventListener("load", startup, false);

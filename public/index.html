@@ -13,6 +13,8 @@
     <button id="startbutton">Take photo</button>
   </div>
   <canvas id="canvas"> </canvas>
+  <button class="frontCamera">front</button>
+  <button class="backCamera">back</button>
   <div class="output">
   <img id="photo" alt="The screen capture will appear in this box." />
   </div>
@@ -20,6 +22,7 @@
     <input type="file" accept="image/*" name="image" id="file" onchange="loadFile(event)" style="display: none;">
     <label for="file" style="cursor: pointer;">Upload Image</label>
     <img id="output" width="100" />
+    <input type="file" accept="image/*" capture="camera"  class="inputget">
   </div>
   <script>
   const width = 320; // We will scale the photo width to this
@@ -49,6 +52,38 @@
     }
     return false;
   }
+
+  function handleVideo(cameraFacing) {
+  const constraints = {
+    video: {
+      facingMode: {
+        exact: cameraFacing
+      }
+    }
+  }
+  return constraints
+};
+
+function turnVideo(constraints) {
+  let video;
+  navigator.mediaDevices.getUserMedia(constraints)
+    .then((stream) => {
+      video = document.createElement("video")
+      video.srcObject = stream
+      video.play()
+      video.onloadeddata = () => {
+        ctx.height = video.videoHeight
+      }
+    })
+
+}
+
+document.querySelector(".frontCamera").addEventListener("click", () => {
+  turnVideo(handleVideo("user"));
+})
+document.querySelector(".backCamera").addEventListener("click", () => {
+  turnVideo(handleVideo("environment"));
+})
 
   function startup() {
     if (showViewLiveResultButton()) {
